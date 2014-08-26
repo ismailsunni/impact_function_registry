@@ -24,7 +24,7 @@ class Registry(object):
     @classmethod
     def list(cls):
         for impact_function in cls._impact_functions:
-            print impact_function.metadata()
+            print impact_function.metadata()['name']
 
     @classmethod
     def get(cls, name):
