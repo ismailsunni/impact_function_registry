@@ -13,6 +13,9 @@ from metadata import (
     unit_building_type_type,
     layer_vector_polygon)
 
+from impact_function_parameters import (
+    flooded_target_field, affected_field, building_type_field,affected_value)
+
 
 class FloodImpactMetadata(MetadataBase):
     """Metadata for Flood Impact Function.
@@ -56,6 +59,13 @@ class FloodImpactMetadata(MetadataBase):
                     'units': [unit_building_type_type],
                     'layer_constraints': [layer_vector_polygon]
                 }
-            }
+            },
+            'parameters': [
+                flooded_target_field,
+                building_type_field,
+                affected_field,
+                affected_value
+            ]
         }
         return dict_meta
+

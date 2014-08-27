@@ -1,21 +1,13 @@
 """Abstract base class for all impact functions."""
 from flood_impact_metadata import FloodImpactMetadata
+from impact_function_base import ImpactFunction
 
 
-class FloodImpactFunction(object):
+class FloodImpactFunction(ImpactFunction):
 
     _metadata = FloodImpactMetadata
 
-    @classmethod
-    def instance(cls):
-        """Make an instance of the impact function."""
-        return cls()
 
-    @classmethod
-    def metadata(cls):
-        """Get the metadata for this class."""
-        return cls._metadata.get_metadata()
-
-    def run(self):
+    def run (self):
         """Run the impact function."""
         print 'Run called for flood impact function.'

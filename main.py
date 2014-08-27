@@ -16,6 +16,14 @@ def main():
     registry.register(FloodImpactFunction)
     registry.list()
     function = registry.get('FloodImpactFunction')
+    function_parameters = function.parameters()
+    for x in function_parameters:
+        print '--', x.name, x.value
+    print 'Change value of target field to FLOODED:'
+    function_parameters[0].value = 'FLOODED'
+    function_parameters = function.parameters()
+    for x in function_parameters:
+        print '--', x.name, x.value
     function.run()
 
 if __name__ == '__main__':

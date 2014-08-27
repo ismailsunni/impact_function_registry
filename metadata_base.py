@@ -27,7 +27,7 @@ def add_to_list(input_list, element):
     It's also guarantee that all elements are unique
 
     :param input_list: A list
-    :tyinput_listist: list
+    :type: input_list: list
 
     :param element: A new element
     :type element: str, list
@@ -458,3 +458,16 @@ class MetadataBase():
             return []
         else:
             return cls.allowed_subcategories(category)
+
+    @classmethod
+    def get_parameters(cls):
+        """Return list of parameters.
+
+        This is a static method. You can use it to get the list of parameters
+        for the impact function.
+
+        :returns: A list that contains all parameters.
+        :rtype: list
+
+        """
+        return cls.get_metadata().get('parameters', [])
