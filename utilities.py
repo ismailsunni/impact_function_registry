@@ -755,3 +755,28 @@ def romanise(number):
     except ValueError:
         return None
     return roman
+
+
+def is_subset(element, container):
+    """Check the membership of element from container.
+
+    It will check based on the type. Only valid for string and list.
+
+    :param element: Element that will be searched for in container.
+    :type element: list, str
+
+    :param container: Container that will be checked.
+    :type container: list, str
+
+    :returns: boolean of the membership
+    :rtype: bool
+    """
+    if type(element) is list:
+        if type(container) is list:
+            return set(element) <= set(container)
+    else:
+        if type(container) is list:
+            return element in container
+        else:
+            return element == container
+    return False

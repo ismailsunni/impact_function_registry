@@ -17,6 +17,11 @@ class ImpactFunction(object):
         """Get the metadata for this class."""
         return cls._metadata.get_metadata()
 
+    @classmethod
+    def parameters(cls):
+        """Get the parameter for this class."""
+        return cls._metadata.get_parameters()
+
     def run(self):
         """Run the impact function."""
         raise NotImplementedError('Run is not yet implemented for this class.')

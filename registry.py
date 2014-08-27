@@ -1,3 +1,5 @@
+from utilities import is_subset
+
 class Registry(object):
     """A simple registry for keeping track of all impact functions.
 
@@ -34,3 +36,92 @@ class Registry(object):
                 return impact_function.instance()
         raise Exception('Impact function called %s not found' % name)
 
+    @classmethod
+    def filter(cls, hazard_keywords, exposure_keywords):
+        """Filter impact function given the hazard and exposure keywords.
+
+        :param hazard_keywords: Dictionary represent hazard keywords
+        :type hazard_keywords: dict
+
+        :param exposure_keywords: Dictionary represent exposure keywords
+        :type exposure_keywords: dict
+
+        :returns: List of impact functions.
+        :rtype: list
+
+        """
+        impact_functions = cls._impact_functions
+        impact_functions = cls.filter_by_hazard(
+            impact_functions, hazard_keywords)
+        impact_functions = cls.filter_by_exposure(
+            impact_functions, exposure_keywords)
+
+        return impact_functions
+
+    @staticmethod
+    def filter_by_hazard(impact_functions, hazard_keywords):
+        """Filter impact function by hazard_keywords.
+
+        :param impact_functions: List of impact functions
+        :type impact_functions: list
+
+        :param hazard_keywords: Dictionary represent hazard keywords
+        :type hazard_keywords: dict
+
+        :returns: List of impact functions.
+        :rtype: list
+
+        """
+        filtered_impact_functions = []
+        for impact_function in impact_functions:
+            impact_function_hazard_keyword = impact_function.metadata()[
+                'categories']['hazard']
+            subcategory = impact_function_hazard_keyword['subcategory']
+            units = impact_function_hazard_keyword['units']
+            layer_constraints = impact_function_hazard_keyword[
+                'layer_constraints']
+
+            if not is_subset(hazard_keywords['subcategory'], subcategory):
+                continue
+            if not is_subset(hazard_keywords['units'], units):
+                continue
+            if not is_subset(
+                    hazard_keywords['layer_constraints'], layer_constraints):
+                continue
+            filtered_impact_functions.append(impact_function)
+
+        return filtered_impact_functions
+
+    @staticmethod
+    def filter_by_exposure(impact_functions, exposure_keywords):
+        """Filter impact function by exposure_keywords.
+
+        :param impact_functions: List of impact functions
+        :type impact_functions: list
+
+        :param exposure_keywords: Dictionary represent exposure keywords
+        :type exposure_keywords: dict
+
+        :returns: List of impact functions.
+        :rtype: list
+
+        """
+        filtered_impact_functions = []
+        for impact_function in impact_functions:
+            impact_function_hazard_keyword = impact_function.metadata()[
+                'categories']['exposure']
+            subcategory = impact_function_hazard_keyword['subcategory']
+            units = impact_function_hazard_keyword['units']
+            layer_constraints = impact_function_hazard_keyword[
+                'layer_constraints']
+
+            if not is_subset(exposure_keywords['subcategory'], subcategory):
+                continue
+            if not is_subset(exposure_keywords['units'], units):
+                continue
+            if not is_subset(
+                    exposure_keywords['layer_constraints'], layer_constraints):
+                continue
+            filtered_impact_functions.append(impact_function)
+
+        return filtered_impact_functions
