@@ -1,7 +1,7 @@
 
 """Concrete implementation of metadata class for flood impacts."""
 
-from metadata_base import MetadataBase
+from metadata.base import MetadataBase
 from utilities import ugettext as tr
 from metadata import (
     hazard_definition,
@@ -13,7 +13,7 @@ from metadata import (
     unit_building_type_type,
     layer_vector_polygon)
 
-from impact_function_parameters import (
+from impact_functions.flood_on_buildings.parameters import (
     flooded_target_field, affected_field, building_type_field,affected_value)
 
 

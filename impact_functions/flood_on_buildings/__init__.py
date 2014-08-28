@@ -1,0 +1,1 @@
+from  impact_function import FloodImpactFunction

@@ -1,11 +1,15 @@
 """Abstract base class for all impact functions."""
-from flood_impact_metadata import FloodImpactMetadata
-from impact_function_base import ImpactFunction
+from impact_functions.flood_on_buildings.metadata import FloodImpactMetadata
+from base import ImpactFunction
 
 
 class FloodImpactFunction(ImpactFunction):
 
     _metadata = FloodImpactMetadata
+
+
+    def __init__(self):
+        """Constructor."""
 
 
     def run (self):

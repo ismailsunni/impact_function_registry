@@ -6,8 +6,11 @@ __date__ = '8/26/14'
 __copyright__ = 'tim@kartoza.com'
 __doc__ = ''
 
+import sys
+print sys.path
+
 from registry import Registry
-from flood_impact_function import FloodImpactFunction
+from impact_functions.flood_on_buildings import FloodImpactFunction
 
 from metadata import (
     hazard_tsunami,

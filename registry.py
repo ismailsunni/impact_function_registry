@@ -62,10 +62,10 @@ class Registry(object):
     def filter_by_hazard(impact_functions, hazard_keywords):
         """Filter impact function by hazard_keywords.
 
-        :param impact_functions: List of impact functions
+        :param impact_functions: List of impact functions.
         :type impact_functions: list
 
-        :param hazard_keywords: Dictionary represent hazard keywords
+        :param hazard_keywords: Dictionary represent hazard keywords.
         :type hazard_keywords: dict
 
         :returns: List of impact functions.
@@ -74,11 +74,11 @@ class Registry(object):
         """
         filtered_impact_functions = []
         for impact_function in impact_functions:
-            impact_function_hazard_keyword = impact_function.metadata()[
+            hazard_keywords = impact_function.metadata()[
                 'categories']['hazard']
-            subcategory = impact_function_hazard_keyword['subcategory']
-            units = impact_function_hazard_keyword['units']
-            layer_constraints = impact_function_hazard_keyword[
+            subcategory = hazard_keywords['subcategory']
+            units = hazard_keywords['units']
+            layer_constraints = hazard_keywords[
                 'layer_constraints']
 
             if not is_subset(hazard_keywords['subcategory'], subcategory):
@@ -108,11 +108,11 @@ class Registry(object):
         """
         filtered_impact_functions = []
         for impact_function in impact_functions:
-            impact_function_hazard_keyword = impact_function.metadata()[
+            exposure_keywords = impact_function.metadata()[
                 'categories']['exposure']
-            subcategory = impact_function_hazard_keyword['subcategory']
-            units = impact_function_hazard_keyword['units']
-            layer_constraints = impact_function_hazard_keyword[
+            subcategory = exposure_keywords['subcategory']
+            units = exposure_keywords['units']
+            layer_constraints = exposure_keywords[
                 'layer_constraints']
 
             if not is_subset(exposure_keywords['subcategory'], subcategory):
