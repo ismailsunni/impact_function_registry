@@ -74,12 +74,11 @@ class Registry(object):
         """
         filtered_impact_functions = []
         for impact_function in impact_functions:
-            hazard_keywords = impact_function.metadata()[
+            if_hazard_keywords = impact_function.metadata()[
                 'categories']['hazard']
-            subcategory = hazard_keywords['subcategory']
-            units = hazard_keywords['units']
-            layer_constraints = hazard_keywords[
-                'layer_constraints']
+            subcategory = if_hazard_keywords['subcategory']
+            units = if_hazard_keywords['units']
+            layer_constraints = if_hazard_keywords['layer_constraints']
 
             if not is_subset(hazard_keywords['subcategory'], subcategory):
                 continue
@@ -108,12 +107,11 @@ class Registry(object):
         """
         filtered_impact_functions = []
         for impact_function in impact_functions:
-            exposure_keywords = impact_function.metadata()[
+            if_exposure_keywords = impact_function.metadata()[
                 'categories']['exposure']
-            subcategory = exposure_keywords['subcategory']
-            units = exposure_keywords['units']
-            layer_constraints = exposure_keywords[
-                'layer_constraints']
+            subcategory = if_exposure_keywords['subcategory']
+            units = if_exposure_keywords['units']
+            layer_constraints = if_exposure_keywords['layer_constraints']
 
             if not is_subset(exposure_keywords['subcategory'], subcategory):
                 continue
