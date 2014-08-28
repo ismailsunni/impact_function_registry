@@ -1,5 +1,5 @@
 """Abstract base class for all impact functions."""
-from metadata import FloodImpactMetadata
+from metadata_definitions import FloodImpactMetadata
 from base import ImpactFunction
 
 
