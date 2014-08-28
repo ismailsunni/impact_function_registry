@@ -773,7 +773,10 @@ def is_subset(element, container):
     """
     if type(element) is list:
         if type(container) is list:
-            return set(element) <= set(container)
+            for i in element:
+                if i not in container:
+                    return False
+            return True
     else:
         if type(container) is list:
             return element in container
