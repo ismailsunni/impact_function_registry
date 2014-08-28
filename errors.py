@@ -117,3 +117,8 @@ class RadiiException(Exception):
     """Raised if radii for volcano buffer is not as we expect."""
     suggestion = ('Please make sure the radii for volcano buffer are '
                   'monotonically increasing.')
+
+
+class InvalidExtentError(Exception):
+    """Raised if an extent if not valid."""
+    pass
