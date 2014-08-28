@@ -7,7 +7,7 @@ __date__ = '8/26/14'
 __copyright__ = 'imajimatika@gmail.com'
 __doc__ = ''
 
-from parameters import StringParameter
+from parameter import StringParameter
 
 flooded_target_field = StringParameter()
 flooded_target_field.name = 'Target Field'

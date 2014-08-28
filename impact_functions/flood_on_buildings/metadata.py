@@ -13,7 +13,7 @@ from metadata import (
     unit_building_type_type,
     layer_vector_polygon)
 
-from parameters import (
+from parameter_definitions import (
     flooded_target_field,
     affected_field,
     building_type_field,
