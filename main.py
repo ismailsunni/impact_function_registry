@@ -28,6 +28,8 @@ def main():
     registry.register(FloodImpactFunction)
     registry.list()
     function = registry.get('FloodImpactFunction')
+    function.extent = [10, 10, 20, 20]
+    function.extent_crs = [4326]
     function_parameters = function.parameters()
     for x in function_parameters:
         print '--', x.name, x.value

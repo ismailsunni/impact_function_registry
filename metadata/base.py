@@ -88,11 +88,11 @@ class MetadataBase():
         :rtype: json
         """
 
-        my_json = json.dumps(MetadataBase.get_metadata())
+        my_json = json.dumps(MetadataBase.as_dict())
         return my_json
 
     @staticmethod
-    def get_metadata():
+    def as_dict():
         """Return metadata as a dictionary.
 
         This is a static method. You can use it to get the metadata in
@@ -126,7 +126,7 @@ class MetadataBase():
             return cls.allowed_subcategories('exposure') + cls\
                 .allowed_subcategories('hazard')
         else:
-            metadata_dict = cls.get_metadata()
+            metadata_dict = cls.as_dict()
             categories = metadata_dict['categories']
             result = add_to_list(result, categories[category]['subcategory'])
             return result
@@ -159,7 +159,7 @@ class MetadataBase():
         :rtype: list
         """
         result = []
-        metadata_dict = cls.get_metadata()
+        metadata_dict = cls.as_dict()
         categories = metadata_dict['categories']
         if subcategory in [x['id'] for x in cls.allowed_subcategories(
                 'exposure')]:
@@ -215,7 +215,7 @@ class MetadataBase():
         result = []
         if not data_type in cls.allowed_data_types(subcategory):
             return result
-        metadata_dict = cls.get_metadata()
+        metadata_dict = cls.as_dict()
         categories = metadata_dict['categories']
         if subcategory in [x['id'] for x in cls.allowed_subcategories(
                 'exposure')]:
@@ -249,7 +249,7 @@ class MetadataBase():
         :rtype: bool
         """
         try:
-            metadata_dict = cls.get_metadata()
+            metadata_dict = cls.as_dict()
             return metadata_dict.get('disabled', False)
         except AttributeError:
             return True
@@ -295,7 +295,7 @@ class MetadataBase():
             return result
 
         else:
-            metadata_dict = cls.get_metadata()
+            metadata_dict = cls.as_dict()
             categories = metadata_dict['categories']
             return categories[category]['layer_constraints']
 
@@ -435,7 +435,7 @@ class MetadataBase():
             return cls.allowed_subcategories(category)
 
     @classmethod
-    def get_parameters(cls):
+    def parameters(cls):
         """Return list of parameters.
 
         This is a static method. You can use it to get the list of parameters
@@ -445,4 +445,4 @@ class MetadataBase():
         :rtype: list
 
         """
-        return cls.get_metadata().get('parameters', [])
+        return cls.as_dict().get('parameters', [])

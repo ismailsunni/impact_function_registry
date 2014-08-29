@@ -2,6 +2,7 @@
 """Concrete implementation of metadata class for flood impacts."""
 
 from metadata.base import MetadataBase
+# TODO - switch to Qt4 tr()
 from utilities import ugettext as tr
 from metadata import (
     hazard_definition,
@@ -29,7 +30,7 @@ class FloodImpactMetadata(MetadataBase):
     are inherited from the abstract base class.
     """
     @staticmethod
-    def get_metadata():
+    def as_dict():
         """Return metadata as a dictionary.
 
         This is a static method. You can use it to get the metadata in

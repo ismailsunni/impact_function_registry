@@ -1,23 +1,41 @@
+# coding=utf-8
 """Abstract base class for all impact functions."""
 
 from metadata.base import MetadataBase
 from errors import InvalidExtentError
+# TODO - switch to Qt4 tr()
+from utilities import ugettext as tr
 
 
 class ImpactFunction(object):
+    """Abstract base class for all impact functions."""
 
     # class properties
     _metadata = MetadataBase
 
     def __init__(self):
-        """Base class constructor."""
+        """Base class constructor.
+
+        All derived classes should normally call this constructor e.g.::
+
+            def __init__(self):
+                super(FloodImpactFunction, self).__init__()
+
+        """
         self._function_type = 'legacy'  # or 'qgis2'
         # Analysis extent to use
         self._extent = None
         # CRS as EPSG number
         self._extent_crs = 4326
         # set this to a gui call back / web callback etc as needed.
-        self._callback = self.console_callback
+        self._callback = self.console_progress_callback
+        self._parameters = None
+        # Layer representing hazard e.g. flood
+        self._hazard = None
+        # Layer representing people / infrastructure that are exposed
+        self._exposure = None
+        # Layer used for aggregating results by area / district
+        self._aggregation = None
 
     @property
     def function_type(self):
@@ -75,11 +93,14 @@ class ImpactFunction(object):
         return self._extent_crs
 
     @extent_crs.setter
-    def extent(self, crs):
-        """Setter for extent property.
+    def extent_crs(self, crs):
+        """Setter for extent_crs property.
 
-        :param extent_crs: Analysis boundary EPSG CRS expressed as an integer.
-        :type extent_crs: int
+        .. note:: We break our rule here on not allowing acronyms for
+            parameter names.
+
+        :param crs: Analysis boundary EPSG CRS expressed as an integer.
+        :type crs: int
         """
         self._extent_crs = crs
 
@@ -111,7 +132,6 @@ class ImpactFunction(object):
         """
         self._callback = callback
 
-
     @classmethod
     def instance(cls):
         """Make an instance of the impact function."""
@@ -120,16 +140,117 @@ class ImpactFunction(object):
     @classmethod
     def metadata(cls):
         """Get the metadata for this class."""
-        return cls._metadata.get_metadata()
+        return cls._metadata.as_dict()
 
     @classmethod
     def parameters(cls):
         """Get the parameter for this class."""
-        return cls._metadata.get_parameters()
+        return cls._metadata.parameters()
 
-    def run(self):
-        """Run the impact function."""
-        raise NotImplementedError('Run is not yet implemented for this class.')
+    def prepare_for_run(self):
+        """Prepare this impact function for running the analysis.
+
+        This method should normally be called in your concrete class's
+        run method before it attempts to do any real processing. This
+        method will do any needed house keeping such as:
+
+            * checking that the exposure and hazard layers sufficiently overlap
+            * clipping or subselecting features from both layers such that
+              only features / coverage within the actual analysis extent
+              will be analysed.
+            * raising errors if any untennable condition exists e.g. extent has
+              no valid CRS.
+
+        We suggest to overload this method in your concrete class implementation
+        so that it includes any impact function specific checks too.
+
+        :raises:
+        """
+        if self.extent is None:
+            raise InvalidExtentError(
+                tr('The analysis extent has not been set.'))
+
+    @property
+    def hazard(self):
+        """Property for the hazard layer to be used for the analysis.
+
+        :returns: A map layer.
+        :rtype: QgsMapLayer, QgsVectorLayer, QgsRasterLayer
+        """
+        return self._hazard
+
+    @hazard.setter
+    def hazard(self, layer):
+        """Setter for hazard layer property.
+
+        :param layer: Hazard layer to be used for the analysis.
+        :type layer: QgsMapLayer, QgsVectorLayer, QgsRasterLayer
+        """
+        # add more robust checks here
+        self._hazard = layer
+
+    @property
+    def exposure(self):
+        """Property for the exposure layer to be used for the analysis.
+
+        :returns: A map layer.
+        :rtype: QgsMapLayer, QgsVectorLayer, QgsRasterLayer
+        """
+        return self._exposure
+
+    @exposure.setter
+    def exposure(self, layer):
+        """Setter for exposure layer property.
+
+        :param layer: exposure layer to be used for the analysis.
+        :type layer: QgsMapLayer, QgsVectorLayer, QgsRasterLayer
+        """
+        # add more robust checks here
+        self._exposure = layer
+
+    @property
+    def aggregation(self):
+        """Property for the aggregation layer to be used for the analysis.
+
+        :returns: A map layer.
+        :rtype: QgsMapLayer, QgsVectorLayer, QgsRasterLayer
+        """
+        return self._aggregation
+
+    @aggregation.setter
+    def aggregation(self, layer):
+        """Setter for aggregation layer property.
+
+        :param layer: Aggregation layer to be used for the analysis.
+        :type layer: QgsMapLayer, QgsVectorLayer, QgsRasterLayer
+        """
+        # add more robust checks here
+        self._aggregation = layer
+
+    def question(self):
+        """Formulate the question for this impact function.
+
+        This method produces a natural language question for this impact
+        function derived from the following three inputs:
+
+            * descriptive name of the hazard layer e.g. 'a flood like in
+                January 2004'
+            * descriptive name of the exposure layer e.g. 'people'
+            * question statement in the impact function metadata e.g.
+                'will be affected'.
+
+        These inputs will be concatentated into a string e.g.:
+
+            "In the event of a flood like in January 2004, how many people
+            will be affected."
+        """
+        # function_title = self.metadata.get_function_title(func)
+        # return (tr('In the event of %(hazard)s how many '
+        #            '%(exposure)s might %(impact)s')
+        #         % {'hazard': hazard_title.lower(),
+        #            'exposure': exposure_title.lower(),
+        #            'impact': function_title.lower()})
+        pass
 
     @staticmethod
     def console_progress_callback(current, maximum, message=None):
