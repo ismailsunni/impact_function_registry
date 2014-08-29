@@ -9,45 +9,61 @@ __doc__ = ''
 
 from string_parameter import StringParameter
 
-flooded_target_field = StringParameter()
-flooded_target_field.name = 'Target Field'
-flooded_target_field.is_required = True
-flooded_target_field.help_text = (
-    'This field of impact layer marks inundated roads by \'1\' value')
-flooded_target_field.description = (
-    'This field of impact layer marks inundated roads by \'1\' value. '
-    'This is the longer description of this parameter.')
-flooded_target_field.value = 'flooded'  # default value
 
-building_type_field = StringParameter()
-building_type_field.name = 'Building Type Field'
-building_type_field.is_required = True
-building_type_field.help_text = (
-    'This field of the exposure layer contains information about building '
-    'types')
-building_type_field.description = (
-    'This field of the exposure layer contains information about building '
-    'types This is the longer description of this parameter.')
-building_type_field.value = 'TYPE'  # default value
+def flooded_target_field():
+    """Generator for the flooded target field parameter."""
+    field = StringParameter()
+    field.name = 'Target Field'
+    field.is_required = True
+    field.help_text = (
+        'This field of impact layer marks inundated roads by \'1\' value')
+    field.description = (
+        'This field of impact layer marks inundated roads by \'1\' value. '
+        'This is the longer description of this parameter.')
+    field.value = 'flooded'  # default value
+    return field
 
-affected_field = StringParameter()
-affected_field.name = 'Affected Field'
-affected_field.is_required = True
-affected_field.help_text = (
-    'This field of the  hazard layer contains information about inundated '
-    'areas')
-affected_field.description = (
-    'This field of the  hazard layer contains information about inundated '
-    'areas. This is the longer description of this parameter.')
-affected_field.value = 'affected'  # default value
 
-affected_value = StringParameter()
-affected_value.name = 'Affected Value'
-affected_value.is_required = True
-affected_value.help_text = (
-    'This value in \'affected_field\' of the hazard layer marks the areas as '
-    'inundated')
-affected_value.description = (
-    'This value in \'affected_field\' of the hazard layer marks the areas as '
-    'inundated. This is the longer description of this parameter.')
-affected_value.value = '1'  # default value
+def building_type_field():
+    """Generator for the building tpe field parameter."""
+    field = StringParameter()
+    field.name = 'Building Type Field'
+    field.is_required = True
+    field.help_text = (
+        'This field of the exposure layer contains information about building '
+        'types')
+    field.description = (
+        'This field of the exposure layer contains information about building '
+        'types This is the longer description of this parameter.')
+    field.value = 'TYPE'  # default value
+    return field
+
+
+def affected_field():
+    """"Generator for selection of affected field parameter."""
+    field = StringParameter()
+    field.name = 'Affected Field'
+    field.is_required = True
+    field.help_text = (
+        'This field of the  hazard layer contains information about inundated '
+        'areas')
+    field.description = (
+        'This field of the  hazard layer contains information about inundated '
+        'areas. This is the longer description of this parameter.')
+    field.value = 'affected'  # default value
+    return field
+
+
+def affected_value():
+    """Generator for parameter stating what values constitute 'affected'."""
+    field = StringParameter()
+    field.name = 'Affected Value'
+    field.is_required = True
+    field.help_text = (
+        'This value in \'affected_field\' of the hazard layer marks the areas '
+        'as inundated')
+    field.description = (
+        'This value in \'affected_field\' of the hazard layer marks the areas '
+        'as inundated. This is the longer description of this parameter.')
+    field.value = '1'  # default value
+    return field

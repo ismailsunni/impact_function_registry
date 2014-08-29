@@ -64,10 +64,10 @@ class FloodImpactMetadata(MetadataBase):
                 }
             },
             'parameters': [
-                flooded_target_field,
-                building_type_field,
-                affected_field,
-                affected_value
+                flooded_target_field(),
+                building_type_field(),
+                affected_field(),
+                affected_value()
             ]
         }
         return dict_meta
