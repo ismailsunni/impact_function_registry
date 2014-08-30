@@ -29,7 +29,7 @@ class FloodImpactFunction(ImpactFunction):
         self.hazard_provider = None
         self.affected_field_index = -1
 
-    def prepare_for_run(self):
+    def prepare(self):
         """Prepare this impact function for running the analysis.
 
         .. seealso:: impact_functions.base.prepare_for_run()
@@ -39,9 +39,10 @@ class FloodImpactFunction(ImpactFunction):
 
         :raises: GetDataError
         """
-        super(FloodImpactFunction, self).prepare_for_run()
+        super(FloodImpactFunction, self).prepare()
 
-        affected_field = self.parameters['affected_field']
+        # Todo update self.parameters() to return a dict
+        affected_field = self.parameters()['affected_field']
         self.hazard_provider = self.hazard.dataProvider()
         self.affected_field_index = self.hazard_provider.fieldNameIndex(
             affected_field)
@@ -51,24 +52,57 @@ class FloodImpactFunction(ImpactFunction):
                 attribute table of the hazard layer.''' % (affected_field, ))
             raise GetDataError(message)
 
+    def _tabulate(self, building_count, buildings_by_type, flooded_count):
+        """Helper to perform tabulation."""
+        tabulated_impact = dict()
+        tabulated_impact['headings'] = [
+            tr('Building Type'),
+            tr('Flooded'),
+            tr('Total')
+        ]
+        tabulated_impact['totals'] = [
+            tr('All'),
+            int(flooded_count),
+            int(building_count)]
+        tabulated_impact['tabulation_title'] = tr('Breakdown by building type')
+        tabulation = []
+        for t, v in buildings_by_type.iteritems():
+            tabulation.append([t, int(v['flooded']), int(v['total'])])
+        tabulated_impact['tabulation'] = tabulation
+        tabulated_impact['title'] = tr('Buildings inundated')
+        self._tabulated_impact = tabulated_impact
+
+    def _style(self, target_field):
+        """Helper to create style."""
+        style_classes = [
+            dict(label=tr('Not Inundated'), value=0, colour='#1EFC7C',
+                 transparency=0, size=0.5),
+            dict(label=tr('Inundated'), value=1, colour='#F31A1C',
+                 transparency=0, size=0.5)]
+        style_info = dict(
+            target_field=target_field,
+            style_classes=style_classes,
+            style_type='categorizedSymbol')
+        self.style_info = style_info
+
     def run(self):
         """Run the impact function."""
         # First fo any generic run work defined in the ABC.
-        self.prepare_for_run()
+        self.prepare()
 
         target_field = self.parameters['target_field']
         building_type_field = self.parameters['building_type_field']
         affected_value = self.parameters['affected_value']
 
         crs = self.exposure.crs().toWkt()
-        e_provider = self.exposure.dataProvider()
-        fields = e_provider.fields()
+        exposure_provider = self.exposure.dataProvider()
+        fields = exposure_provider.fields()
         # If target_field does not exist, add it:
         if fields.indexFromName(target_field) == -1:
-            e_provider.addAttributes(
+            exposure_provider.addAttributes(
                 [QgsField(target_field, QVariant.Int)])
-        target_field_index = e_provider.fieldNameIndex(target_field)
-        fields = e_provider.fields()
+        target_field_index = exposure_provider.fieldNameIndex(target_field)
+        fields = exposure_provider.fields()
 
         # Create layer for store the lines from exposure and extent
         building_layer = QgsVectorLayer(
@@ -104,7 +138,6 @@ class FloodImpactFunction(ImpactFunction):
                 hazard_poly = QgsGeometry(multi_polygon.geometry())
             else:
                 # Make geometry union of inundated polygons
-
                 # But some multi_polygon.geometry() could be invalid, skip them
                 tmp_geometry = hazard_poly.combine(multi_polygon.geometry())
                 try:
@@ -120,18 +153,19 @@ class FloodImpactFunction(ImpactFunction):
                 (affected_value, ))
             raise GetDataError(message)
 
-        e_data = self.exposure.getFeatures(request)
-        for feat in e_data:
-            building_geom = feat.geometry()
-            attributes = feat.attributes()
+        exposure_features = self.exposure.getFeatures(request)
+        for feature in exposure_features:
+            building_geometry = feature.geometry()
+            attributes = feature.attributes()
             l_feat = QgsFeature()
-            l_feat.setGeometry(building_geom)
+            l_feat.setGeometry(building_geometry)
             l_feat.setAttributes(attributes)
-            if hazard_poly.intersects(building_geom):
+            if hazard_poly.intersects(building_geometry):
                 l_feat.setAttribute(target_field_index, 1)
             else:
 
                 l_feat.setAttribute(target_field_index, 0)
+            # Synctactic sugar to discard return values
             (_, __) = building_layer.dataProvider().addFeatures([l_feat])
         building_layer.updateExtents()
 
@@ -157,39 +191,11 @@ class FloodImpactFunction(ImpactFunction):
                 flooded_count += 1
                 buildings_by_type[building_type]['flooded'] += 1
 
-        result = {}
-        result['question'] = self.question()
-        result['headings'] = [
-            tr('Building Type'),
-            tr('Flooded'),
-            tr('Total')
-        ]
-        result['totals'] = [
-            tr('All'),
-            int(flooded_count),
-            int(building_count)]
-        result['tabulation_title'] = tr('Breakdown by building type')
+        self._tabulate(building_count, buildings_by_type, flooded_count)
 
-        tabulation = []
-        for t, v in buildings_by_type.iteritems():
-            tabulation.append([t, int(v['flooded']), int(v['total'])])
-        result['tabulation'] = tabulation
+        self._style(target_field)
 
-        result['title'] = tr('Buildings inundated')
-        self.result = result
-
-        style_classes = [
-            dict(label=tr('Not Inundated'), value=0, colour='#1EFC7C',
-                 transparency=0, size=0.5),
-            dict(label=tr('Inundated'), value=1, colour='#F31A1C',
-                 transparency=0, size=0.5)]
-        style_info = dict(
-            target_field=target_field,
-            style_classes=style_classes,
-            style_type='categorizedSymbol')
-        self.style_info = style_classes
-
-        return building_layer
+        self._impact = building_layer
         # Convert QgsVectorLayer to inasafe layer and return it.
         # building_layer = Vector(
         #     data=building_layer,
