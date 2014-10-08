@@ -1,4 +1,5 @@
 # coding=utf-8
+"""Main file for showing off impact function registry."""
 __author__ = 'Tim Sutton'
 __project_name = 'impact_function_registry'
 __filename = 'main'
